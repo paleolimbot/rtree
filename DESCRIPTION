@@ -20,3 +20,5 @@ Imports:
     vctrs
 Suggests: 
     geos
+URL: https://github.com/paleolimbot/rtree
+BugReports: https://github.com/paleolimbot/rtree/issues
