@@ -5,25 +5,59 @@
 #include "cpp11/declarations.hpp"
 #include <R_ext/Visibility.h>
 
-// packedrtree-r.cpp
+// flatgeobuf.cpp
 SEXP packed_rtree_create(list rct, int node_size);
 extern "C" SEXP _rtree_packed_rtree_create(SEXP rct, SEXP node_size) {
   BEGIN_CPP11
     return cpp11::as_sexp(packed_rtree_create(cpp11::as_cpp<cpp11::decay_t<list>>(rct), cpp11::as_cpp<cpp11::decay_t<int>>(node_size)));
   END_CPP11
 }
-// packedrtree-r.cpp
+// flatgeobuf.cpp
 list packed_rtree_query(sexp tree_sexp, list rct);
 extern "C" SEXP _rtree_packed_rtree_query(SEXP tree_sexp, SEXP rct) {
   BEGIN_CPP11
     return cpp11::as_sexp(packed_rtree_query(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct)));
   END_CPP11
 }
+// geos.cpp
+void rtree_libgeos_init_api();
+extern "C" SEXP _rtree_rtree_libgeos_init_api() {
+  BEGIN_CPP11
+    rtree_libgeos_init_api();
+    return R_NilValue;
+  END_CPP11
+}
+// geos.cpp
+SEXP geos_strtree_create(int node_size);
+extern "C" SEXP _rtree_geos_strtree_create(SEXP node_size) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(geos_strtree_create(cpp11::as_cpp<cpp11::decay_t<int>>(node_size)));
+  END_CPP11
+}
+// geos.cpp
+void geos_strtree_insert(sexp tree_sexp, list rct);
+extern "C" SEXP _rtree_geos_strtree_insert(SEXP tree_sexp, SEXP rct) {
+  BEGIN_CPP11
+    geos_strtree_insert(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct));
+    return R_NilValue;
+  END_CPP11
+}
+// geos.cpp
+list geos_strtree_query(sexp tree_sexp, list rct);
+extern "C" SEXP _rtree_geos_strtree_query(SEXP tree_sexp, SEXP rct) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(geos_strtree_query(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct)));
+  END_CPP11
+}
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_rtree_packed_rtree_create", (DL_FUNC) &_rtree_packed_rtree_create, 2},
-    {"_rtree_packed_rtree_query",  (DL_FUNC) &_rtree_packed_rtree_query,  2},
+    {"_rtree_geos_strtree_create",    (DL_FUNC) &_rtree_geos_strtree_create,    1},
+    {"_rtree_geos_strtree_insert",    (DL_FUNC) &_rtree_geos_strtree_insert,    2},
+    {"_rtree_geos_strtree_query",     (DL_FUNC) &_rtree_geos_strtree_query,     2},
+    {"_rtree_packed_rtree_create",    (DL_FUNC) &_rtree_packed_rtree_create,    2},
+    {"_rtree_packed_rtree_query",     (DL_FUNC) &_rtree_packed_rtree_query,     2},
+    {"_rtree_rtree_libgeos_init_api", (DL_FUNC) &_rtree_rtree_libgeos_init_api, 0},
     {NULL, NULL, 0}
 };
 }

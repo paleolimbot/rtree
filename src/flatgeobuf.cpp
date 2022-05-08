@@ -61,6 +61,9 @@ list packed_rtree_query(sexp tree_sexp, list rct) {
     for (const auto& item_result: item_results) {
       ix.push_back(i + 1);
       itree.push_back(item_result.index + 1);
+      if ((ix.size() % 1000) == 0) {
+        check_user_interrupt();
+      }
     }
   }
 

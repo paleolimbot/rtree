@@ -2,10 +2,13 @@
 % Please edit documentation in R/geos.R
 \name{rtree_geos}
 \alias{rtree_geos}
+\alias{rtree_geos_insert}
 \alias{rtree_geos_query}
 \title{GEOS Tree}
 \usage{
 rtree_geos(x, node_capacity = 16)
+
+rtree_geos_insert(tree, x)
 
 rtree_geos_query(tree, x)
 }

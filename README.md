@@ -28,23 +28,38 @@ library(geoarrow)
 library(rtree)
 
 buildings <- read_geoparquet("../geoarrow/data-raw/denmark_osm/osm_buildings_a-geoarrow.parquet")
-test_query <- wk::as_rct(grd::grd(buildings, nx = 10, ny = 10))
+test_query <- wk::as_rct(grd::grd(buildings, nx = 20, ny = 20))
 ```
 
 ``` r
-system.time(tree_geos <- rtree_geos(buildings))
-#>    user  system elapsed 
-#>   1.857   0.464   2.605
-system.time(result_geos <- rtree_geos_query(tree_geos, test_query))
-#>    user  system elapsed 
-#>   0.845   0.020   0.865
+bench::mark(rtree_geos(buildings))
+#> Warning: Some expressions had a GC in every iteration; so filtering is disabled.
+#> # A tibble: 1 × 6
+#>   expression                 min   median `itr/sec` mem_alloc `gc/sec`
+#>   <bch:expr>            <bch:tm> <bch:tm>     <dbl> <bch:byt>    <dbl>
+#> 1 rtree_geos(buildings)    1.03s    1.03s     0.968     108MB    0.968
+tree_geos <- rtree_geos(buildings)
+
+bench::mark(rtree_geos_query(tree_geos, test_query))
+#> # A tibble: 1 × 6
+#>   expression                                   min   median `itr/sec` mem_alloc
+#>   <bch:expr>                              <bch:tm> <bch:tm>     <dbl> <bch:byt>
+#> 1 rtree_geos_query(tree_geos, test_query)   38.9ms   39.7ms      25.2      64MB
+#> # … with 1 more variable: gc/sec <dbl>
 ```
 
 ``` r
-system.time(tree_fgb <- rtree_flatgeobuf(buildings))
-#>    user  system elapsed 
-#>   0.346   0.058   0.459
-system.time(result_fgb <- rtree_flatgeobuf_query(tree_fgb, test_query))
-#>    user  system elapsed 
-#>   0.162   0.011   0.173
+bench::mark(rtree_flatgeobuf(buildings))
+#> # A tibble: 1 × 6
+#>   expression                       min   median `itr/sec` mem_alloc `gc/sec`
+#>   <bch:expr>                  <bch:tm> <bch:tm>     <dbl> <bch:byt>    <dbl>
+#> 1 rtree_flatgeobuf(buildings)    368ms    368ms      2.72     108MB     2.72
+tree_fgb <- rtree_flatgeobuf(buildings)
+
+bench::mark(rtree_flatgeobuf_query(tree_fgb, test_query))
+#> # A tibble: 1 × 6
+#>   expression                                      min median `itr/sec` mem_alloc
+#>   <bch:expr>                                   <bch:> <bch:>     <dbl> <bch:byt>
+#> 1 rtree_flatgeobuf_query(tree_fgb, test_query)  351ms  354ms      2.82      64MB
+#> # … with 1 more variable: gc/sec <dbl>
 ```

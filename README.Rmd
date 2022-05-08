@@ -38,15 +38,19 @@ library(geoarrow)
 library(rtree)
 
 buildings <- read_geoparquet("../geoarrow/data-raw/denmark_osm/osm_buildings_a-geoarrow.parquet")
-test_query <- wk::as_rct(grd::grd(buildings, nx = 10, ny = 10))
+test_query <- wk::as_rct(grd::grd(buildings, nx = 20, ny = 20))
 ```
 
 ```{r}
-system.time(tree_geos <- rtree_geos(buildings))
-system.time(result_geos <- rtree_geos_query(tree_geos, test_query))
+bench::mark(rtree_geos(buildings))
+tree_geos <- rtree_geos(buildings)
+
+bench::mark(rtree_geos_query(tree_geos, test_query))
 ```
 
 ```{r}
-system.time(tree_fgb <- rtree_flatgeobuf(buildings))
-system.time(result_fgb <- rtree_flatgeobuf_query(tree_fgb, test_query))
+bench::mark(rtree_flatgeobuf(buildings))
+tree_fgb <- rtree_flatgeobuf(buildings)
+
+bench::mark(rtree_flatgeobuf_query(tree_fgb, test_query))
 ```

@@ -13,18 +13,25 @@
 #' rtree_geos_query(tree, wk::rct(0.25, 0.25, 0.75, 0.75))
 #'
 rtree_geos <- function(x, node_capacity = 16) {
-  geos::geos_strtree(wk::wk_envelope(x), node_capacity = node_capacity)
+  tree <- structure(
+    geos_strtree_create(node_capacity),
+    class = "rtree_geos_strtree"
+  )
+
+  rtree_geos_insert(tree, x)
+  tree
+}
+
+#' @rdname rtree_geos
+#' @export
+rtree_geos_insert <- function(tree, x) {
+  stopifnot(inherits(tree, "rtree_geos_strtree"))
+  geos_strtree_insert(tree, wk::wk_envelope(x))
 }
 
 #' @rdname rtree_geos
 #' @export
 rtree_geos_query <- function(tree, x) {
-  stopifnot(inherits(tree, "geos_strtree"))
-  result <- geos::geos_strtree_query(tree, wk::wk_envelope(x))
-  new_data_frame(
-    list(
-      x = vctrs::vec_rep_each(seq_along(result), lengths(result, FALSE)),
-      tree = unlist(result, use.names = FALSE)
-    )
-  )
+  stopifnot(inherits(tree, "rtree_geos_strtree"))
+  new_data_frame(geos_strtree_query(tree, wk::wk_envelope(x)))
 }

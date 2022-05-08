@@ -3,5 +3,6 @@
 export(rtree_flatgeobuf)
 export(rtree_flatgeobuf_query)
 export(rtree_geos)
+export(rtree_geos_insert)
 export(rtree_geos_query)
 useDynLib(rtree, .registration = TRUE)
