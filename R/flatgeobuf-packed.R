@@ -17,6 +17,8 @@ rtree_flatgeobuf <- function(x, node_capacity = 16) {
   )
 }
 
+#' @rdname rtree_flatgeobuf
+#' @export
 rtree_flatgeobuf_query <- function(tree, x) {
   stopifnot(inherits(tree, "rtree_flatgeobuf"))
   new_data_frame(packed_rtree_query(tree, wk::wk_envelope(x)))

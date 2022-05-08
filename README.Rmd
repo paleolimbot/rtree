@@ -1,0 +1,52 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# rtree
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of rtree is to experiment with a few different types of spatial indexes at a pretty low level.
+
+## Installation
+
+You can install the development version of rtree from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("paleolimbot/rtree")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(geoarrow)
+library(rtree)
+
+buildings <- read_geoparquet("../geoarrow/data-raw/denmark_osm/osm_buildings_a-geoarrow.parquet")
+test_query <- wk::as_rct(grd::grd(buildings, nx = 10, ny = 10))
+```
+
+```{r}
+system.time(tree_geos <- rtree_geos(buildings))
+system.time(result_geos <- rtree_geos_query(tree_geos, test_query))
+```
+
+```{r}
+system.time(tree_fgb <- rtree_flatgeobuf(buildings))
+system.time(result_fgb <- rtree_flatgeobuf_query(tree_fgb, test_query))
+```

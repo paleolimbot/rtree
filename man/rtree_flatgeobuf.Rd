@@ -2,14 +2,19 @@
 % Please edit documentation in R/flatgeobuf-packed.R
 \name{rtree_flatgeobuf}
 \alias{rtree_flatgeobuf}
+\alias{rtree_flatgeobuf_query}
 \title{FlatGeobuf PackedRTree}
 \usage{
 rtree_flatgeobuf(x, node_capacity = 16)
+
+rtree_flatgeobuf_query(tree, x)
 }
 \arguments{
 \item{x}{A vector of geometries for which \code{\link[wk:wk_bbox]{wk::wk_envelope()}} works}
 
 \item{node_capacity}{Node size}
+
+\item{tree}{A tree index object}
 }
 \description{
 FlatGeobuf PackedRTree
