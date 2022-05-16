@@ -16,10 +16,14 @@ geos_strtree_create <- function(node_size) {
   .Call(`_rtree_geos_strtree_create`, node_size)
 }
 
-geos_strtree_insert <- function(tree_sexp, rct) {
-  invisible(.Call(`_rtree_geos_strtree_insert`, tree_sexp, rct))
+geos_strtree_size <- function(tree_sexp) {
+  .Call(`_rtree_geos_strtree_size`, tree_sexp)
 }
 
-geos_strtree_query <- function(tree_sexp, rct) {
-  .Call(`_rtree_geos_strtree_query`, tree_sexp, rct)
+geos_strtree_insert <- function(tree_sexp, rct) {
+  .Call(`_rtree_geos_strtree_insert`, tree_sexp, rct)
+}
+
+geos_strtree_query <- function(tree_sexp, rct, query_once) {
+  .Call(`_rtree_geos_strtree_query`, tree_sexp, rct, query_once)
 }

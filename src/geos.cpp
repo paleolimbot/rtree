@@ -72,7 +72,13 @@ SEXP geos_strtree_create(int node_size) {
 }
 
 [[cpp11::register]]
-void geos_strtree_insert(sexp tree_sexp, list rct) {
+int geos_strtree_size(sexp tree_sexp) {
+  external_pointer<GEOSSTRTreeWrapper> tree(tree_sexp);
+  return tree->size;
+}
+
+[[cpp11::register]]
+int geos_strtree_insert(sexp tree_sexp, list rct) {
   external_pointer<GEOSSTRTreeWrapper> tree(tree_sexp);
 
   doubles xmins = rct[0];
@@ -91,6 +97,8 @@ void geos_strtree_insert(sexp tree_sexp, list rct) {
     GEOSSTRtree_insert_r(context, tree->ptr, geom.ptr, reinterpret_cast<void*>(tree->size));
     tree->size++;
   }
+
+  return tree->size;
 }
 
 struct GEOSSTRTreeQuery {
@@ -98,7 +106,23 @@ struct GEOSSTRTreeQuery {
   writable::integers* ix;
   writable::integers* itree;
   SEXP error;
+  bool found_item;
 };
+
+void query_callback_once(void *item, void *userdata) {
+  uintptr_t item_value = reinterpret_cast<uintptr_t>(item);
+  auto query = reinterpret_cast<GEOSSTRTreeQuery*>(userdata);
+  if (query->error != R_NilValue || query->found_item) {
+    return;
+  }
+
+  try {
+    query->itree->push_back(static_cast<int>(item_value + 1));
+    query->found_item = true;
+  } catch (unwind_exception& e) {
+    query->error = e.token;
+  }
+}
 
 void query_callback(void *item, void *userdata) {
   uintptr_t item_value = reinterpret_cast<uintptr_t>(item);
@@ -116,7 +140,7 @@ void query_callback(void *item, void *userdata) {
 }
 
 [[cpp11::register]]
-list geos_strtree_query(sexp tree_sexp, list rct) {
+list geos_strtree_query(sexp tree_sexp, list rct, bool query_once) {
   external_pointer<GEOSSTRTreeWrapper> tree(tree_sexp);
 
   doubles xmins = rct[0];
@@ -128,7 +152,14 @@ list geos_strtree_query(sexp tree_sexp, list rct) {
 
   writable::integers ix;
   writable::integers itree;
-  struct GEOSSTRTreeQuery query {0, &ix, &itree, R_NilValue};
+  struct GEOSSTRTreeQuery query {0, &ix, &itree, R_NilValue, false};
+
+  GEOSQueryCallback callback;
+  if (query_once) {
+    callback = &query_callback_once;
+  } else {
+    callback = &query_callback;
+  }
 
   for (R_xlen_t i = 0; i < n; i++) {
     if ((i % 1000) == 0) {
@@ -136,11 +167,14 @@ list geos_strtree_query(sexp tree_sexp, list rct) {
     }
 
     query.ix_ = i;
+    query.found_item = false;
     GEOSRectWrapper geom(xmins[i], ymins[i], xmaxs[i], ymaxs[i]);
-    GEOSSTRtree_query_r(context, tree->ptr, geom.ptr, &query_callback, &query);
+    GEOSSTRtree_query_r(context, tree->ptr, geom.ptr, callback, &query);
 
     if (query.error != R_NilValue) {
       throw unwind_exception(query.error);
+    } else if (query_once && !query.found_item) {
+      itree.push_back(NA_INTEGER);
     }
   }
 

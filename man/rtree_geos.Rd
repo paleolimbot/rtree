@@ -4,6 +4,8 @@
 \alias{rtree_geos}
 \alias{rtree_geos_insert}
 \alias{rtree_geos_query}
+\alias{rtree_geos_query_once}
+\alias{rtree_geos_size}
 \title{GEOS Tree}
 \usage{
 rtree_geos(x, node_capacity = 16)
@@ -11,6 +13,10 @@ rtree_geos(x, node_capacity = 16)
 rtree_geos_insert(tree, x)
 
 rtree_geos_query(tree, x)
+
+rtree_geos_query_once(tree, x)
+
+rtree_geos_size(tree)
 }
 \arguments{
 \item{x}{A vector of geometries for which \code{\link[wk:wk_bbox]{wk::wk_envelope()}} works}
@@ -26,5 +32,6 @@ GEOS Tree
 points <- wk::xy(runif(10), runif(10))
 tree <- rtree_geos(points)
 rtree_geos_query(tree, wk::rct(0.25, 0.25, 0.75, 0.75))
+rtree_geos_size(tree)
 
 }

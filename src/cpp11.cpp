@@ -35,18 +35,24 @@ extern "C" SEXP _rtree_geos_strtree_create(SEXP node_size) {
   END_CPP11
 }
 // geos.cpp
-void geos_strtree_insert(sexp tree_sexp, list rct);
-extern "C" SEXP _rtree_geos_strtree_insert(SEXP tree_sexp, SEXP rct) {
+int geos_strtree_size(sexp tree_sexp);
+extern "C" SEXP _rtree_geos_strtree_size(SEXP tree_sexp) {
   BEGIN_CPP11
-    geos_strtree_insert(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct));
-    return R_NilValue;
+    return cpp11::as_sexp(geos_strtree_size(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp)));
   END_CPP11
 }
 // geos.cpp
-list geos_strtree_query(sexp tree_sexp, list rct);
-extern "C" SEXP _rtree_geos_strtree_query(SEXP tree_sexp, SEXP rct) {
+int geos_strtree_insert(sexp tree_sexp, list rct);
+extern "C" SEXP _rtree_geos_strtree_insert(SEXP tree_sexp, SEXP rct) {
   BEGIN_CPP11
-    return cpp11::as_sexp(geos_strtree_query(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct)));
+    return cpp11::as_sexp(geos_strtree_insert(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct)));
+  END_CPP11
+}
+// geos.cpp
+list geos_strtree_query(sexp tree_sexp, list rct, bool query_once);
+extern "C" SEXP _rtree_geos_strtree_query(SEXP tree_sexp, SEXP rct, SEXP query_once) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(geos_strtree_query(cpp11::as_cpp<cpp11::decay_t<sexp>>(tree_sexp), cpp11::as_cpp<cpp11::decay_t<list>>(rct), cpp11::as_cpp<cpp11::decay_t<bool>>(query_once)));
   END_CPP11
 }
 
@@ -54,7 +60,8 @@ extern "C" {
 static const R_CallMethodDef CallEntries[] = {
     {"_rtree_geos_strtree_create",    (DL_FUNC) &_rtree_geos_strtree_create,    1},
     {"_rtree_geos_strtree_insert",    (DL_FUNC) &_rtree_geos_strtree_insert,    2},
-    {"_rtree_geos_strtree_query",     (DL_FUNC) &_rtree_geos_strtree_query,     2},
+    {"_rtree_geos_strtree_query",     (DL_FUNC) &_rtree_geos_strtree_query,     3},
+    {"_rtree_geos_strtree_size",      (DL_FUNC) &_rtree_geos_strtree_size,      1},
     {"_rtree_packed_rtree_create",    (DL_FUNC) &_rtree_packed_rtree_create,    2},
     {"_rtree_packed_rtree_query",     (DL_FUNC) &_rtree_packed_rtree_query,     2},
     {"_rtree_rtree_libgeos_init_api", (DL_FUNC) &_rtree_rtree_libgeos_init_api, 0},
