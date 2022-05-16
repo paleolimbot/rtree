@@ -35,6 +35,9 @@
 #include <numeric>
 #include <vector>
 #include <memory>
+#include <functional>
+#include <limits>
+#include <algorithm>
 
 namespace FlatGeobuf {
 
